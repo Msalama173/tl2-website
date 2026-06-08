@@ -1163,12 +1163,8 @@ async function loadData() {
   try {
     // Load products
     const pRes = await fetch(`${API}/products`);
-<<<<<<< HEAD
     const data = await pRes.json();
-    products = Array.isArray(data) ? data : [];
-=======
-    const data = await pRes.json(); products = Array.isArray(data) ? data : (data.products || []);
->>>>>>> 561f161256ca3b2923d0e9b32dc8d362bbc03051
+    products = Array.isArray(data) ? data : (data.products || []);
 
     // Load settings (social links, brand message, payment number)
     const sRes = await fetch(`${API}/settings`);
