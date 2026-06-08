@@ -1164,7 +1164,7 @@ async function loadData() {
     // Load products
     const pRes = await fetch(`${API}/products`);
     const data = await pRes.json();
-    products = Array.isArray(data) ? data : [];
+    products = Array.isArray(data) ? data : (data.products || []);
 
     // Load settings (social links, brand message, payment number)
     const sRes = await fetch(`${API}/settings`);
