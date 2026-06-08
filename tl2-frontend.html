@@ -824,8 +824,60 @@
     transition: transform 0.4s ease;
     box-shadow: 0 0 40px rgba(0,212,255,0.2);
     text-align: center;
+    min-width: 280px;
+    font-size: 1rem;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Success overlay */
+  .success-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(10px);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  .success-overlay.active { opacity: 1; pointer-events: all; }
+  .success-box {
+    text-align: center;
+    padding: 3rem 2rem;
+    max-width: 420px;
+  }
+  .success-icon { font-size: 4rem; margin-bottom: 1rem; animation: popIn 0.5s ease; }
+  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+  .success-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    color: var(--accent-cyan);
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.1em;
+  }
+  .success-msg {
+    color: rgba(232,244,255,0.7);
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  .success-close {
+    background: rgba(0,212,255,0.15);
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    padding: 0.8rem 2.5rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .success-close:hover { background: rgba(0,212,255,0.25); }
 
   /* Footer */
   footer {
@@ -1077,6 +1129,19 @@
   </div>
 </div>
 
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="success-icon">✅</div>
+    <h2 class="success-title">تم الأوردر!</h2>
+    <p class="success-msg">
+      شكراً ليك! أوردرك اتستلم بنجاح.<br>
+      هيتواصل معاك في أقرب وقت لتأكيد الطلب.
+    </p>
+    <button class="success-close" onclick="closeSuccess()">تمام 👍</button>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -1098,7 +1163,8 @@ async function loadData() {
   try {
     // Load products
     const pRes = await fetch(`${API}/products`);
-    products = await pRes.json();
+    const data = await pRes.json();
+    products = Array.isArray(data) ? data : [];
 
     // Load settings (social links, brand message, payment number)
     const sRes = await fetch(`${API}/settings`);
@@ -1442,13 +1508,13 @@ async function placeOrder() {
       updateCartCount();
       closeModal('checkoutModal');
       closeModal('productModal');
-      showToast('🎉 تم استلام أوردرك! هيتواصل معاك قريباً', 5000);
       document.getElementById('custName').value = '';
       document.getElementById('custPhone').value = '';
       document.getElementById('custAddress').value = '';
       selectedPayment = '';
       document.getElementById('paymentNumberInfo').style.display = 'none';
       document.getElementById('transferUpload').style.display = 'none';
+      document.getElementById('successOverlay').classList.add('active');
     } else {
       showToast('⚠️ ' + (result.error || 'حصل خطأ، حاول تاني'), 4000);
     }
@@ -1459,6 +1525,10 @@ async function placeOrder() {
 }
 
 // ========= Utils =========
+function closeSuccess() {
+  document.getElementById('successOverlay').classList.remove('active');
+}
+
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
 }
