@@ -1441,7 +1441,8 @@ async function placeOrder() {
       cart = [];
       updateCartCount();
       closeModal('checkoutModal');
-      showToast('🎉 تم استلام أوردرك! هيتواصل معاك قريباً');
+      closeModal('productModal');
+      showToast('🎉 تم استلام أوردرك! هيتواصل معاك قريباً', 5000);
       document.getElementById('custName').value = '';
       document.getElementById('custPhone').value = '';
       document.getElementById('custAddress').value = '';
@@ -1449,11 +1450,11 @@ async function placeOrder() {
       document.getElementById('paymentNumberInfo').style.display = 'none';
       document.getElementById('transferUpload').style.display = 'none';
     } else {
-      showToast('⚠️ ' + (result.error || 'حصل خطأ، حاول تاني'));
+      showToast('⚠️ ' + (result.error || 'حصل خطأ، حاول تاني'), 4000);
     }
   } catch (err) {
     console.error(err);
-    showToast('⚠️ تأكد إن السيرفر شغال على localhost:3001');
+    showToast('⚠️ حصل خطأ في الاتصال، حاول تاني', 4000);
   }
 }
 
@@ -1462,11 +1463,11 @@ function closeModal(id) {
   document.getElementById(id).classList.remove('active');
 }
 
-function showToast(msg) {
+function showToast(msg, duration = 3000) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  setTimeout(() => t.classList.remove('show'), duration);
 }
 
 // Close modals on overlay click
