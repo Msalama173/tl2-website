@@ -1163,8 +1163,12 @@ async function loadData() {
   try {
     // Load products
     const pRes = await fetch(`${API}/products`);
+<<<<<<< HEAD
     const data = await pRes.json();
-    products = Array.isArray(data) ? data : (data.products || []);
+    products = Array.isArray(data) ? data : [];
+=======
+    const data = await pRes.json(); products = Array.isArray(data) ? data : (data.products || []);
+>>>>>>> 561f161256ca3b2923d0e9b32dc8d362bbc03051
 
     // Load settings (social links, brand message, payment number)
     const sRes = await fetch(`${API}/settings`);
@@ -1307,7 +1311,7 @@ function renderProducts() {
       <div class="product-info">
         <div class="product-name">${p.name}</div>
         <div class="product-colors">
-          ${p.colors.map(c => `<div class="color-dot" style="background:${c}"></div>`).join('')}
+          ${(Array.isArray(p.colors) ? p.colors : []).map(c => `<div class="color-dot" style="background:${c}"></div>`).join('')}
         </div>
         <div class="product-price">${p.price} EGP</div>
       </div>
@@ -1334,13 +1338,13 @@ function openProduct(id) {
   document.getElementById('modalPrice').textContent = currentProduct.price + ' EGP';
 
   // colors
-  document.getElementById('colorOptions').innerHTML = currentProduct.colors.map((c,i) => `
+  document.getElementById('colorOptions').innerHTML = (Array.isArray(currentProduct.colors) ? currentProduct.colors : []).map((c,i) => `
     <div class="color-option ${i===0?'selected':''}" style="background:${c}"
       onclick="selectColor(${i}, this)" title="${currentProduct.colorNames[i]}"></div>
   `).join('');
 
   // sizes
-  document.getElementById('sizeOptions').innerHTML = currentProduct.sizes.map(s => `
+  document.getElementById('sizeOptions').innerHTML = (Array.isArray(currentProduct.sizes) ? currentProduct.sizes : []).map(s => `
     <button class="size-btn" onclick="selectSize('${s}', this)">${s}</button>
   `).join('');
 
