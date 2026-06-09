@@ -221,7 +221,6 @@
     overflow: hidden;
     opacity: 0;
     animation: heroReveal 1.2s 1.1s ease forwards;
-    
   }
   .hero-cta::before {
     content: '';
@@ -339,7 +338,6 @@
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     overflow: hidden;
-    
     transition: all 0.4s ease;
     position: relative;
     backdrop-filter: blur(10px);
@@ -407,7 +405,6 @@
     letter-spacing: 0.2em;
     font-size: 0.8rem;
     text-transform: uppercase;
-    
   }
 
   .product-info {
@@ -494,7 +491,6 @@
     width: 36px; height: 36px;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    
     font-size: 1.1rem;
     transition: all 0.3s;
     z-index: 10;
@@ -529,7 +525,6 @@
     width: 32px; height: 32px;
     border-radius: 50%;
     border: 2px solid transparent;
-    
     transition: all 0.2s;
     position: relative;
   }
@@ -551,7 +546,6 @@
     font-weight: 600;
     font-size: 0.85rem;
     letter-spacing: 0.1em;
-    
     transition: all 0.2s;
     border-radius: 2px;
   }
@@ -580,7 +574,6 @@
     border: none;
     color: var(--accent-cyan);
     font-size: 1.2rem;
-    
     padding: 0;
     line-height: 1;
     transition: transform 0.2s;
@@ -616,7 +609,6 @@
     background: none;
     border: none;
     color: rgba(255,100,100,0.7);
-    
     font-size: 0.9rem;
   }
 
@@ -629,7 +621,6 @@
     font-size: 0.85rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    
     transition: all 0.3s;
     border-radius: 2px;
     width: 100%;
@@ -650,7 +641,6 @@
     font-size: 1rem;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    
     transition: all 0.3s;
     border-radius: 2px;
   }
@@ -722,7 +712,6 @@
     border: 1px solid var(--border-subtle);
     padding: 0.8rem;
     text-align: center;
-    
     transition: all 0.3s;
     border-radius: 2px;
     font-size: 0.8rem;
@@ -740,7 +729,6 @@
     border: 1px dashed var(--border-subtle);
     padding: 1.5rem;
     text-align: center;
-    
     border-radius: 2px;
     transition: all 0.3s;
     color: var(--text-dim);
@@ -799,7 +787,6 @@
     font-size: 1rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    
     transition: all 0.3s;
     border-radius: 2px;
   }
@@ -940,7 +927,6 @@
 </style>
 </head>
 <body>
-
 
 <canvas id="space-canvas"></canvas>
 <div class="nebula-overlay"></div>
@@ -1109,11 +1095,11 @@
       </div>
     </div>
 
-      <div id="paymentNumberInfo" style="display:none;background:rgba(0,212,255,0.07);border:1px solid var(--border-subtle);border-radius:2px;padding:1rem;margin-bottom:1.2rem;text-align:center">
-        <p style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);font-family:'Rajdhani',sans-serif;margin-bottom:0.4rem">حول على الرقم</p>
-        <p style="font-family:'Orbitron',sans-serif;font-size:1.3rem;color:var(--accent-cyan);letter-spacing:0.1em">01017403903</p>
-        <p style="font-size:0.75rem;color:var(--text-dim);margin-top:0.3rem">ابعت صورة التحويل بعد الدفع ↓</p>
-      </div>
+    <div id="paymentNumberInfo" style="display:none;background:rgba(0,212,255,0.07);border:1px solid var(--border-subtle);border-radius:2px;padding:1rem;margin-bottom:1.2rem;text-align:center">
+      <p style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);font-family:'Rajdhani',sans-serif;margin-bottom:0.4rem">حول على الرقم</p>
+      <p style="font-family:'Orbitron',sans-serif;font-size:1.3rem;color:var(--accent-cyan);letter-spacing:0.1em">01017403903</p>
+      <p style="font-size:0.75rem;color:var(--text-dim);margin-top:0.3rem">ابعت صورة التحويل بعد الدفع ↓</p>
+    </div>
     <div id="transferUpload" style="display:none">
       <p class="selector-label" style="margin-bottom:0.6rem">صورة التحويل</p>
       <label class="upload-zone" id="uploadZone">
@@ -1166,7 +1152,7 @@ async function loadData() {
     const data = await pRes.json();
     products = Array.isArray(data) ? data : (data.products || []);
 
-    // Load settings (social links, brand message, payment number)
+    // Load settings (social links, brand message)
     const sRes = await fetch(`${API}/settings`);
     const settings = await sRes.json();
 
@@ -1188,13 +1174,32 @@ async function loadData() {
     }
 
     renderProducts();
+    loadCart(); // <--- استدعاء استرجاع السلة المحفوظة بعد تحميل البيانات
   } catch (err) {
     console.warn('API غير متاح، هيشتغل بدون backend:', err.message);
     products = [];
     renderProducts();
+    loadCart();
   }
 }
 
+// ========= LocalStorage Cart System =========
+function saveCart() {
+  localStorage.setItem('tl2_cart', JSON.stringify(cart));
+}
+
+function loadCart() {
+  const saved = localStorage.getItem('tl2_cart');
+  if (saved) {
+    try {
+      cart = JSON.parse(saved);
+      updateCartCount();
+      renderCartList();
+    } catch (e) {
+      console.error('فشل في قراءة السلة من الـ LocalStorage:', e);
+    }
+  }
+}
 
 // ========= Space Canvas =========
 const canvas = document.getElementById('space-canvas');
@@ -1209,7 +1214,11 @@ function resize() {
 
 function initStars() {
   stars = [];
-  for (let i = 0; i < 280; i++) {
+  // تحسين الأداء: تقليل عدد النجوم للموبايل لتوفير استهلاك المعالج والبطارية
+  const isMobile = window.innerWidth < 768;
+  const starCount = isMobile ? 70 : 280;
+
+  for (let i = 0; i < starCount; i++) {
     stars.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
@@ -1220,6 +1229,7 @@ function initStars() {
     });
   }
   // Shooting stars
+  nebulae = [];
   for (let i = 0; i < 3; i++) {
     nebulae.push({
       x: Math.random() * canvas.width,
@@ -1378,6 +1388,7 @@ function addItemToCart() {
   });
   updateCartCount();
   renderCartList();
+  saveCart(); // <--- حفظ في الـ LocalStorage
   showToast('✓ اتضاف للأوردر');
 }
 
@@ -1405,6 +1416,7 @@ function removeItem(i) {
   cart.splice(i, 1);
   renderCartList();
   updateCartCount();
+  saveCart(); // <--- تحديث الـ LocalStorage
 }
 
 function updateCartCount() {
@@ -1467,7 +1479,6 @@ async function placeOrder() {
 
   const total = cart.reduce((s,i) => s + i.price, 0);
 
-  // In real implementation, this goes to your backend API
   const orderData = {
     customer: { name, phone, address },
     items: cart.map(i => ({
@@ -1484,7 +1495,6 @@ async function placeOrder() {
   showToast('⏳ جاري إرسال الطلب...');
 
   try {
-    // Check if there's a transfer image
     const fileInput = document.querySelector('#transferUpload input[type=file]');
     const hasFile = fileInput && fileInput.files[0];
 
@@ -1506,6 +1516,7 @@ async function placeOrder() {
     if (result.success) {
       cart = [];
       updateCartCount();
+      saveCart(); // <--- تفريغ السلة من الـ LocalStorage بعد إتمام الطلب بنجاح
       closeModal('checkoutModal');
       closeModal('productModal');
       document.getElementById('custName').value = '';
@@ -1540,7 +1551,6 @@ function showToast(msg, duration = 3000) {
   setTimeout(() => t.classList.remove('show'), duration);
 }
 
-// Close modals on overlay click
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', e => {
     if (e.target === overlay) overlay.classList.remove('active');
